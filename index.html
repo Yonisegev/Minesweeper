@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper - Yoni Segev</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body onload="init()">
+    <div class="diff-selection">
+        <button onclick="initDifficulty(4)">Beginner</button>
+        <button onclick="initDifficulty(8)">Medium</button>
+        <button onclick="initDifficulty(12)">Expert</button>
+    </div>
+    <nav class="navbar">
+        <div class="stopwatch">
+            <output id="display-area">00:00</output>
+        </div>
+
+        <div class="lives-count">
+            <img src="./misc/heart1.png" alt="">
+            <p class="lives-counter">3</p>
+        </div>
+
+        <div class="smiley-face">
+            <p onclick="resetGame()">😃</p>
+        </div>
+
+        <div class="hint-mode">
+            <img onclick="hintModeOn()" src="./misc/bulb-off.png" alt="">
+            <p class="hint-counter">3</p>
+        </div>
+
+    </nav>
+
+    <table class="mine-render">
+        <tbody class="mine-board">
+
+        </tbody>
+    </table>
+
+    <script src="./js/util.js"></script>
+    <script src="./js/boardCreate.js"></script>
+    <script src="./js/stopwatch.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+
+</html>
