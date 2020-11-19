@@ -47,3 +47,15 @@ function renderBoard(mat) {
     elBoard.innerHTML = strHTML;
 
 }
+
+function renderMinesToBoard() {
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[0].length; j++) {
+            var cell = gBoard[i][j];
+            if (cell.isMine) {
+                var elCell = document.querySelector(`.cell-${i}-${j}`);
+                elCell.classList.add('mine');
+            }
+        }
+    }
+} 

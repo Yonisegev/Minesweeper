@@ -13,7 +13,18 @@ var gLives = 3;
 var gIsHintMode = false;
 var gHintCount = 3;
 var gHintNegs = [];
+var gBestScoreEasy = localStorage.easy;
+var gBestScoreMed;
+var gBestScoreHard;
+var gSafeClickCount = 3;
+var gIsSafeOn = false;
+var gIsSoundOn = true;
 
+
+// Bugs to handle:
+// While in hint mode, if you click a mine, you lose a life - SOLVED
+// First click not rendering a number - SOLVED
+// Screen needs to be scrolled when in Expert mode - SOLVED
 
 
 function initDifficulty(size = 4) {
@@ -43,16 +54,23 @@ function init() {
 }
 
 function resetData() { // Clear all global data and intervals
+    if (gBestScoreEasy) document.querySelector('.easy').innerText = gBestScoreEasy;
     var elSmiley = document.querySelector('.smiley-face p');
     var elHintCount = document.querySelector('.hint-counter')
+    var elLivesCounter = document.querySelector('.lives-counter')
+    var elSafeCount = document.querySelector('.safe-counter');
     elSmiley.innerText = '😃';
     elHintCount.innerText = gHintCount;
+    elLivesCounter.innerText = gLives;
+    elSafeCount = gSafeClickCount;
     gIsFirstClick = true;
     gClickCount = 0;
     gIsGameOn = true;
     gLives = 3;
     gHintCount = 3;
     gIsHintMode = false;
+    gSafeClickCount = 3;
+    gIsSoundOn = true;
     if (started) clearInterval(started);
     reset(); // reset stopwatch
 
@@ -64,11 +82,11 @@ function resetGame() {
 }
 
 function livesCounter(elCell, i, j) {
-    // add html lives
-    // add css lives
-    if (gBoard[i][j].isMine) {
+    if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
         var elLivesCounter = document.querySelector('.lives-counter')
         if (!gLives) return;
+        var mineHitSound = new Audio('./misc/minehit.mp3')
+        if (gIsSoundOn) mineHitSound.play();
         gLives--;
         elLivesCounter.innerText = gLives;
         console.log(`SAVED. ${gLives} left`);
@@ -83,7 +101,7 @@ function hintModeOn() {
 
 }
 
-function showCell(elCell, i, j) { // hint mode
+function showCell(elCell, i, j) { // hint mode, will dissappear after 1 second
     var elHintCount = document.querySelector('.hint-counter')
     var elBulb = document.querySelector('.hint-mode img');
     hintExpandNegs({ i: i, j: j })
@@ -109,7 +127,7 @@ function showCell(elCell, i, j) { // hint mode
 }
 
 
-function revealCell(elCell, i, j) {
+function revealCell(elCell, i, j) { // Reveal the cell and its content
     elCell.innerText = gBoard[i][j].minesAroundCount;
     if (!gIsHintMode) {
         elCell.classList.add('clicked');
@@ -124,10 +142,11 @@ function cellClick(elCell, i, j) {
     gClickCount++
     if (gIsFirstClick) {
         gIsGameOn = true;
-        renderMines(gBoard, currCell);
+        renderMines(gBoard, currCell); // Put mines at random locations
         setMinesNegsCount();
         startTimer()
-        renderBoard(gBoard);
+        renderMinesToBoard(); // Render the mine cells instead of the whole board
+
 
     }
     gIsFirstClick = false;
@@ -149,11 +168,12 @@ function cellClick(elCell, i, j) {
     }
 
     // Handling mines
-    if (gBoard[i][j].isMine && gLives === 0) {
+    if (!gIsHintMode && !gBoard[i][j].isMarked && gLives === 0 && gBoard[i][j].isMine) {
         checkGameOver(elCell);
     }
     // Expanding negs
     if (!gBoard[i][j].minesAroundCount && !gBoard[i][j].isMine && !gIsHintMode) {
+
         expandNegs({ i: i, j: j });
     }
 
@@ -170,25 +190,26 @@ function cellClick(elCell, i, j) {
 }
 
 
-function cellMark(elCell, i, j) {
+function cellMark(elCell, i, j) { // Handle flags
     window.addEventListener('contextmenu', function (elCell) { // Prevents context menu from showing
         elCell.preventDefault();
     }, false);
 
-    if (gIsFirstClick) {
-        startTimer();
-    }
-    gIsFirstClick = false;
+    if (gIsFirstClick) return
     if (!gIsGameOn) return;
     if (gIsHintMode) return;
     if (!gBoard[i][j].isShown && !gBoard[i][j].isMarked) {
         elCell.classList.add('marked');
         elCell.innerText = FLAG;
+        var flagSound = new Audio('./misc/flagsound.mp3');
+        if (gIsSoundOn) flagSound.play();
         gBoard[i][j].isMarked = true;
     } else if (gBoard[i][j].isMarked) {
+        gBoard[i][j].isMarked = false;
+        var pullFlag = new Audio('./misc/pullflag.mp3');
+        if (gIsSoundOn) pullFlag.play();
         elCell.classList.remove('marked')
         elCell.innerText = ' ';
-        gBoard[i][j].isMarked = false;
     }
     gameWon();
 }
@@ -216,10 +237,14 @@ function checkGameOver(currCell) {
     currCell.style.backgroundColor = 'red';
     var elMines = document.querySelectorAll('.mine')
     for (var i = 0; i < elMines.length; i++) {
-
         elMines[i].innerText = MINE;
+
     }
     stop();
+    var loseSound = new Audio('./misc/losesound.mp3')
+    setTimeout(function () {
+        if (gIsSoundOn) loseSound.play();
+    }, 350)
     gIsGameOn = false;
     smileyStatus('Sad');
 }
@@ -232,8 +257,11 @@ function gameWon() {
 
         }
     }
+    var winSound = new Audio('./misc/winsound.mp3');
+    if (gIsSoundOn) winSound.play();
     console.log('win');
     stop();
+    bestScore();
     gIsGameOn = false;
     smileyStatus('Sunglasses');
 }
@@ -266,6 +294,7 @@ function hintExpandNegs(pos) {
             if (!cell.isShown) {
                 cell.isShown = false;
                 var elCell = document.querySelector(`.cell-${i}-${j}`);
+                if (gBoard[i][j].isMarked) continue;
                 elCell.innerText = cell.isMine ? MINE : cell.minesAroundCount;
                 gHintNegs.push({ i, j })
             }
@@ -283,4 +312,86 @@ function smileyStatus(state) {
         elSmiley.innerText = '😎';
     }
 
+}
+
+// Best Score - Local Storage
+
+function bestScore() {
+    var currScore = document.getElementById("display-area").innerHTML
+    if (!gBestScoreEasy) gBestScoreEasy = '9999'
+    if (gLevel.SIZE === 4 && currScore < gBestScoreEasy) {
+        gBestScoreEasy = currScore;
+        localStorage.setItem('easy', gBestScoreEasy);
+        document.querySelector('.easy').innerText = localStorage.easy;
+    }
+
+    if (gLevel.SIZE === 8 && currScore < gBestScoreMed) {
+        gBestScoreMed = currScore;
+        localStorage.setItem('medium', gBestScoreMed);
+        document.querySelector('.medium').innerText = localStorage.medium;
+    }
+
+    if (gLevel.SIZE === 12 && currScore < gBestScoreHard) {
+        gBestScoreHard = currScore;
+        localStorage.setItem('hard', gBestScoreHard);
+        document.querySelector('.hard', gBestScoreHard);
+    }
+    console.log(currScore);
+    console.log('local storage:', localStorage.bestScoreEasy);
+}
+
+function resetBestScore() {
+    localStorage.clear();
+    gBestScoreEasy = localStorage.easy;
+    gBestScoreMed = localStorage.medium;
+    gBestScoreHard = localStorage.hard;
+    document.querySelector('.easy').innerText = 'Play to update!';
+    document.querySelector('.medium').innerText = 'Play to update!';
+    document.querySelector('.extreme').innerText = 'Play to update!';
+}
+
+function safeMode() {
+    if (!gSafeClickCount) return;
+    if (!gIsGameOn) return
+    gIsSafeOn = true;
+    var safeClicks = [];
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[0].length; j++) {
+            var currCell = gBoard[i][j];
+            if (!currCell.isMine && !currCell.isShown && !currCell.isMarked) {
+                safeClicks.push({ i, j });
+            }
+        }
+    }
+    shuffleArray(safeClicks);
+    var safeClick = safeClicks.pop();
+    var i = safeClick.i;
+    var j = safeClick.j
+    var elCell = document.querySelector(`.cell-${i}-${j}`)
+    elCell.innerText = gBoard[i][j].minesAroundCount;
+    elCell.style.backgroundImage = 'linear-gradient(to right, #FF0000, #FF0000)'
+
+    setTimeout(function () {
+        elCell.innerText = ' ';
+        elCell.style.backgroundImage = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'
+    }, 2000)
+    gSafeClickCount--
+    gIsSafeOn = false;
+    document.querySelector('.safe-counter').innerText = gSafeClickCount;
+
+}
+
+
+function muteUnmute() {
+    var soundIcon = document.querySelector('.sound-icon')
+    var soundText = document.querySelector('.sound-icon-text');
+    if (gIsSoundOn) {
+        soundIcon.innerText = '🔈'
+        soundText.innerText = 'Unmute';
+        gIsSoundOn = false;
+    } else {
+        soundIcon.innerText = '🔊';
+        soundText.innerText = 'Mute';
+        gIsSoundOn = true;
+    }
 }

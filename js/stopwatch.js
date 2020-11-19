@@ -56,7 +56,6 @@ function clockRunning() {
 };
 
 function startTimer() {
-    var elTimer = document.querySelector('.stopwatch');
-    elTimer.style.visibility = 'visible';
+
     start();
 }

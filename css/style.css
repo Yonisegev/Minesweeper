@@ -1,19 +1,41 @@
 * {
     box-sizing: border-box;
-    background-color: white;
-    color: black;
+
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-image: radial-gradient(circle 248px at center, #16d9e3 0%, #30c7ec 47%, #46aef7 100%);
+    font-family: 'Lato', sans-serif;
     margin: 0;
 }
 
+button {
+    width: 200px;
+    height: 50px;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, .1);
+    color: #333;
+    text-align: center;
+    letter-spacing: 1px;
+    border: 1px solid lightblue;
+
+}
+
+button:hover {
+    transition: all .1s;
+    cursor: pointer;
+    letter-spacing: 1.5px;
+    transform: scale(1.1);
+}
+
+td {
+    font-size: 15px;
+}
 .mine-render {
-    padding-top: 20px;
+    padding-top: 10px;
     width: 70vh;
     height: 65vh;
-    margin: auto;
+    margin: -490px auto;
     table-layout: fixed;
 }
 
@@ -21,10 +43,16 @@ body {
 
 .cell {
     width: 00px;
-    height: 50px;
+    height: 25px;
     border: 1px solid black;
-    background-color: gray;
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     text-align: center;
+    z-index: 5;
+}
+
+.cell:hover {
+    transition: all .2s;
+    background-color: whitesmoke;
 }
 
 .mine {
@@ -33,6 +61,7 @@ body {
 }
 
 .clicked {
+    transition: ease-in .2s;
     background-color: white;
 }
 
@@ -41,28 +70,30 @@ body {
 }
 
 .stopwatch {
-    visibility: hidden;
-    display: inline-block;
+    /* display: inline-block; */
     background-color: inherit;
 }
 
 .stopwatch > output {
-    background-color: gray;
+    font-weight: 700;
+    background-color: transparent;
     position: absolute;
-    left: 49%;
+    left: 47%;
     top: 100px;
     font-size: 30px;
 }
 
 .lives-count {
     background-color:inherit;
-    display: inline-block;
+    font-weight: 700;
 }
 
 .lives-count img {
     background-color: transparent;
     position: relative;
     left: 200px;
+    bottom: 15px;
+    cursor: pointer;
 }
 
 .lives-count p {
@@ -70,13 +101,13 @@ body {
     display: inline-block;
     position: relative;
     left: 158px;
-    top: -25px;
+    top: 20px;
+    font-weight: 700;
 }
 
 .smiley-face {
 background-color: transparent;
 font-size: 35px;
-display: inline-block;
 text-align: center;
 cursor: pointer;
 }
@@ -84,28 +115,32 @@ cursor: pointer;
 .smiley-face p {
     background-color: transparent;
     position: absolute;
-    left: 49%;
+    left: 48%;
     top: 110px;
 }
 
 .hint-mode {
-    display: inline-block;
     background-color: transparent;
+    font-weight: 700;
 }
 
 .hint-mode img {
     background-color: transparent;
     cursor: pointer;
+    position: relative;
+    bottom: -16px;
 }
 
 .hint-mode p {
     background-color: transparent;
     position: relative;
-    left: 25px;
+    left: 0px;
+    top: 20px;
 }
 
 
 .marked {
+    transition: ease-in .2s;
     background-color: green;
 }
 
@@ -117,10 +152,85 @@ cursor: pointer;
 nav {
     margin: auto;
     width: 60%;
+
 }
 .navbar {
+    padding: 10px 0;
+    margin-top: 10px;
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    border: 1px solid lightblue;
+}
 
-    padding: 30px 0;
-    margin-top: 20px;
-    background-color: gray;
+.navbar>div {
+    display: inline-block;
+    text-align: center;
+}
+
+
+.sidebar {
+    display: inline-block;
+    width: 200px;
+    height: 490px;
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 10px 0;
+    border-radius: 10px;
+    border: 1px solid lightblue;
+    margin-left: 50px;
+    position: relative;
+    top: 0px;
+}
+
+.sidebar-score {
+    text-align: center;
+    padding: 0 5px;
+}
+
+.sidebar-score p {
+    font-size: 14px;
+}
+
+
+.sidebar-score hr {
+    width: 80%;
+}
+
+.sidebar-score button {
+    width: 70%;
+    margin-top: 25px;
+}
+
+.safe-click {
+    position: relative;
+    left: 500px;
+    top: 18px; 
+    font-weight: 700;
+}
+
+.safe-click p {
+    position: relative;
+    top: 3px
+}
+
+.shield-img {
+    cursor: pointer;
+}
+
+.mute-unmute {
+    position: absolute;
+    left: 1092px;
+    top: 42px;
+}
+
+.sound-icon {
+    cursor: pointer;
+    font-size: 35px;
+    position: relative;
+    top: 40px;
+}
+
+.sound-icon-text {
+    font-weight: 700;
+    position: relative;
+    top: 37px;
 }
