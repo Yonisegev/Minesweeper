@@ -201,36 +201,38 @@ nav {
 }
 
 .safe-click {
-    position: relative;
-    left: 500px;
-    top: 18px; 
     font-weight: 700;
 }
 
 .safe-click p {
     position: relative;
-    top: 3px
+    top: 19px;
+    left: 500px;
 }
 
 .shield-img {
     cursor: pointer;
+    position: relative;
+    left: 500px;
+    top: 23px;
 }
 
 .mute-unmute {
-    position: absolute;
-    left: 1092px;
-    top: 42px;
+    height: 25px;
+
 }
 
 .sound-icon {
     cursor: pointer;
     font-size: 35px;
     position: relative;
-    top: 40px;
+    top: 30px;
+    left: 600px;
 }
 
 .sound-icon-text {
     font-weight: 700;
     position: relative;
-    top: 37px;
+    top: 23px;
+    left: 600px;
 }
