@@ -52,7 +52,7 @@ td {
 
 .cell:hover {
     transition: all .2s;
-    background-color: whitesmoke;
+    background-image: linear-gradient(to right, #fff, #ffffff);;
 }
 
 .mine {
