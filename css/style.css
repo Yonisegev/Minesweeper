@@ -62,7 +62,7 @@ td {
 
 .clicked {
     transition: ease-in .2s;
-    background-color: white;
+    background-image: linear-gradient(to right, #fff, #ffffff);;
 }
 
 .hide {

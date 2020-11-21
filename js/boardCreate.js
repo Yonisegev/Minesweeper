@@ -48,7 +48,7 @@ function renderBoard(mat) {
 
 }
 
-function renderMinesToBoard() {
+function renderMinesToBoard() {  // Render the mine cells instead of the whole board
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[0].length; j++) {
             var cell = gBoard[i][j];

@@ -14,20 +14,15 @@ var gIsHintMode = false;
 var gHintCount = 3;
 var gHintNegs = [];
 var gBestScoreEasy = localStorage.easy;
-var gBestScoreMed;
-var gBestScoreHard;
+var gBestScoreMed = localStorage.medium;
+var gBestScoreHard = localStorage.hard;
 var gSafeClickCount = 3;
 var gIsSafeOn = false;
 var gIsSoundOn = true;
 
 
-// Bugs to handle:
-// While in hint mode, if you click a mine, you lose a life - SOLVED
-// First click not rendering a number - SOLVED
-// Screen needs to be scrolled when in Expert mode - SOLVED
+function initDifficulty(size = 4) { // A function used with resetData() to reset the game to the same level the user was on after finishing one game.
 
-
-function initDifficulty(size = 4) {
     resetData()
     if (size === 4) {
         gLevel.SIZE = 4;
@@ -47,7 +42,7 @@ function initDifficulty(size = 4) {
     init();
 }
 
-function init() {
+function init() { // called on page load
     resetData();
     gBoard = buildBoard();
     renderBoard(gBoard);
@@ -55,6 +50,8 @@ function init() {
 
 function resetData() { // Clear all global data and intervals
     if (gBestScoreEasy) document.querySelector('.easy').innerText = gBestScoreEasy;
+    if (gBestScoreMed) document.querySelector('.medium').innerText = gBestScoreMed;
+    if (gBestScoreHard) document.querySelector('.hard').innerText = gBestScoreHard;
     var elSmiley = document.querySelector('.smiley-face p');
     var elHintCount = document.querySelector('.hint-counter')
     var elLivesCounter = document.querySelector('.lives-counter')
@@ -62,7 +59,7 @@ function resetData() { // Clear all global data and intervals
     elSmiley.innerText = '😃';
     elHintCount.innerText = gHintCount;
     elLivesCounter.innerText = gLives;
-    elSafeCount = gSafeClickCount;
+    elSafeCount.innerText = gSafeClickCount;
     gIsFirstClick = true;
     gClickCount = 0;
     gIsGameOn = true;
@@ -70,7 +67,6 @@ function resetData() { // Clear all global data and intervals
     gHintCount = 3;
     gIsHintMode = false;
     gSafeClickCount = 3;
-    gIsSoundOn = true;
     if (started) clearInterval(started);
     reset(); // reset stopwatch
 
@@ -81,7 +77,7 @@ function resetGame() {
     initDifficulty(gLevel.SIZE);
 }
 
-function livesCounter(elCell, i, j) {
+function livesCounter(i, j) {
     if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
         var elLivesCounter = document.querySelector('.lives-counter')
         if (!gLives) return;
@@ -93,7 +89,7 @@ function livesCounter(elCell, i, j) {
     }
 }
 
-function hintModeOn() {
+function hintModeOn() { // Change bulb photo when activating hint mode
     if (gHintCount <= 0) return
     var elBulb = document.querySelector('.hint-mode img');
     gIsHintMode = true;
@@ -114,14 +110,12 @@ function showCell(elCell, i, j) { // hint mode, will dissappear after 1 second
             var hintI = gHintNegs[k].i;
             var hintJ = gHintNegs[k].j;
             var currCell = document.querySelector(`.cell-${hintI}-${hintJ}`)
+            if (currCell.innerText === FLAG) continue // if a cell is marked with a flag, don't change its text to an empty string
             currCell.innerText = ' ';
             elBulb.src = './misc/bulb-off.png'
             gIsHintMode = false;
         }
     }, 1000)
-
-
-    // add css
     gHintCount--;
     elHintCount.innerText = gHintCount;
 }
@@ -158,7 +152,7 @@ function cellClick(elCell, i, j) {
     if (gIsHintMode) return;
 
 
-    livesCounter(elCell, i, j);
+    livesCounter(i, j);
     if (!gIsGameOn) return;
 
     // Handling tiles
@@ -178,14 +172,9 @@ function cellClick(elCell, i, j) {
     }
 
 
-
+    // Check if the user won every click
     gameWon();
 
-
-
-
-    var pos = { i, j };
-    console.log(pos);
 
 }
 
@@ -234,7 +223,7 @@ function renderMines(board, currCell) {
 
 
 function checkGameOver(currCell) {
-    currCell.style.backgroundColor = 'red';
+    currCell.style.backgroundImage = 'linear-gradient(135deg, #ff0000 0%, #ff0000 100%)';
     var elMines = document.querySelectorAll('.mine')
     for (var i = 0; i < elMines.length; i++) {
         elMines[i].innerText = MINE;
@@ -259,7 +248,6 @@ function gameWon() {
     }
     var winSound = new Audio('./misc/winsound.mp3');
     if (gIsSoundOn) winSound.play();
-    console.log('win');
     stop();
     bestScore();
     gIsGameOn = false;
@@ -267,7 +255,7 @@ function gameWon() {
 }
 
 function expandNegs(pos) {
-    console.log('This cell has no negs');
+    // console.log('This cell has no negs');
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i >= gBoard.length) continue;
         for (var j = pos.j - 1; j <= pos.j + 1; j++) {
@@ -368,7 +356,8 @@ function safeMode() {
     var i = safeClick.i;
     var j = safeClick.j
     var elCell = document.querySelector(`.cell-${i}-${j}`)
-    elCell.innerText = gBoard[i][j].minesAroundCount;
+    elCell.innerText = 'SAFE';
+    // gBoard[i][j].minesAroundCount
     elCell.style.backgroundImage = 'linear-gradient(to right, #FF0000, #FF0000)'
 
     setTimeout(function () {
