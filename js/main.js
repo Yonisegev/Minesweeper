@@ -51,7 +51,7 @@ function init() { // called on page load
 function resetData() { // Clear all global data and intervals
     if (gBestScoreEasy) document.querySelector('.easy').innerText = gBestScoreEasy;
     if (gBestScoreMed) document.querySelector('.medium').innerText = gBestScoreMed;
-    if (gBestScoreHard) document.querySelector('.hard').innerText = gBestScoreHard;
+    if (gBestScoreHard) document.querySelector('.extreme').innerText = gBestScoreHard;
     var elSmiley = document.querySelector('.smiley-face p');
     var elHintCount = document.querySelector('.hint-counter')
     var elLivesCounter = document.querySelector('.lives-counter')
@@ -306,23 +306,23 @@ function smileyStatus(state) {
 
 function bestScore() {
     var currScore = document.getElementById("display-area").innerHTML
-    if (!gBestScoreEasy) gBestScoreEasy = '9999'
+    if (!gBestScoreEasy && gLevel.SIZE === 4) gBestScoreEasy = '9999'
     if (gLevel.SIZE === 4 && currScore < gBestScoreEasy) {
         gBestScoreEasy = currScore;
         localStorage.setItem('easy', gBestScoreEasy);
         document.querySelector('.easy').innerText = localStorage.easy;
     }
-
+    if (!gBestScoreMed && gLevel.SIZE === 8) gBestScoreMed = '9999'
     if (gLevel.SIZE === 8 && currScore < gBestScoreMed) {
         gBestScoreMed = currScore;
         localStorage.setItem('medium', gBestScoreMed);
         document.querySelector('.medium').innerText = localStorage.medium;
     }
-
+    if (!gBestScoreHard && gLevel.SIZE === 12) gBestScoreHard = '9999'
     if (gLevel.SIZE === 12 && currScore < gBestScoreHard) {
         gBestScoreHard = currScore;
         localStorage.setItem('hard', gBestScoreHard);
-        document.querySelector('.hard', gBestScoreHard);
+        document.querySelector('.extreme', gBestScoreHard);
     }
     console.log(currScore);
     console.log('local storage:', localStorage.bestScoreEasy);

@@ -186,7 +186,7 @@ nav {
     padding: 0 5px;
 }
 
-.sidebar-score p {
+.sidebar-score p:not(1) {
     font-size: 14px;
 }
 
@@ -235,4 +235,8 @@ nav {
     position: relative;
     top: 23px;
     left: 600px;
+}
+
+.trophy-icon {
+    font-size: 20px;
 }
